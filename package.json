@@ -1,0 +1,24 @@
+{
+  "name": "api-rest-inventario",
+  "version": "1.0.0",
+  "description": "Proyecto de inventario de productos de aplicaciones distribuidas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TWMateo/Inventario-Productos.git"
+  },
+  "keywords": [
+    "Inventario",
+    "Aplicaciones",
+    "Distrubuidas"
+  ],
+  "author": "Grupo 01 - Chancosi Mateo, Flores Jeremy, Mejia Carolayne, Sanchez Rivaldo, Quishpe Alejandro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TWMateo/Inventario-Productos/issues"
+  },
+  "homepage": "https://github.com/TWMateo/Inventario-Productos#readme"
+}
