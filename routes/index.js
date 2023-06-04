@@ -10,3 +10,4 @@ router.get('/pruebaApi',getPrueba)
 
 //Paquetes a exportar
 module.exports = router
+

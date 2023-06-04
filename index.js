@@ -17,3 +17,7 @@ app.use(require('./routes/index.js'))
 app.listen(3000)//Puede ser cualquier puerto pero frecuentemente se usa 3000
 app.get('/',(req,res)=>{res.send('Welcome to libros API-REST!!')})
 console.log('Server running in: http://localhost:3000')
+
+// console.log("Hola mundo, hola 2023")
+// Exportamos el objeto que queremos usar y guardamos en un
+const {db} = require('./cnn')
