@@ -15,10 +15,6 @@ const pgp = pgPromise({})
 const db = pgp(config)
 
 console.log('Conexion ok')
-//const result=db.any('Select * from pizzas;')
-//console.log(result)
-//'Then' me permite esperar a que el promise se cumpla
-//.any se usa debido a que me devuelve multiples resultados
 db.any('Select * from categoria')
     .then(res => { console.table(res) })
 
