@@ -1,29 +1,31 @@
-//console.log("Hola mundo, hola 2023")
-//const {db} = require('./cnn')
-//1,Packages
-const express=require('express')
+//import express from 'express';
+/*import {createServer} from 'http';
+import app from './app.js';
 
-//2.Inicializo
-const app = express()
+const server = createServer(app);
+const PORT = process.env.PORT || 4000;
 
-//3.Midlewears(permite configurar el paquete --app)
-app.use(express.json())//formato que uso
-app.use(express.urlencoded({extended:true}))//la direccion de la url esta codificada
+server.listen(PORT, () => {
+  console.log(`listening on *:${PORT}`);
+});*/
 
-//5.Routes-> Rutas que usara
-app.use(require('./routes/index.js'))
+const express = require('express');
+const app = express();
 
-//4.Server execution
-/*
-const server = http.createServer(app)
-const PORT = process.env.PORT || 4000
-app.use(cors())
-*/
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.listen(3000)//Puede ser cualquier puerto pero frecuentemente se usa 3000
-app.get('/',(req,res)=>{res.send('Welcome to libros API-REST!!')})
-console.log('Server running in: http://localhost:3000')
+app.use(require('./routes/index.js'));
 
-// console.log("Hola mundo, hola 2023")
-// Exportamos el objeto que queremos usar y guardamos en un
-const {db} = require('./cnn')
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running at: http://localhost:${port}`);
+});
+
+app.get('/', (req, res) => {
+  res.send('Welcome to libros API-REST!!');
+});
+
+const { db } = require('./cnn');
+
+

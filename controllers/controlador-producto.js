@@ -62,29 +62,29 @@ const updateEstadoProductoById = async (req, res) => {
     const { pro_id, pro_estado } = req.body
     if (pro_id.length == 0) {
         return res.json({
-                Error: '9997',
-                Mensaje: 'Revise el parametro pro_id.'
+                mensaje: 'Error',
+                response: 'Revise el parametro pro_id.'
             })
     }
     if(pro_estado.length == 0){
         return res.json({
-            Error: '9997',
-            Mensaje: 'Revise el parametro pro_estado.' 
+            mensaje: 'Error',
+            response: 'Revise el parametro pro_estado.' 
         })
     }
     try {
         const response = await db.none('UPDATE PRODUCTO SET pro_estado = $2 WHERE pro_id = $1', [pro_id, pro_estado])
         return res.json(
             {
-                Error: '0',
-                Mensaje: 'Estado de producto acutalizado a ' + pro_estado + ' exitosamente.'
+                mensaje: 'Error',
+                response: 'Estado de producto acutalizado a ' + pro_estado + ' exitosamente.'
             }
         )
     } catch (error) {
         return res.json(
             {
-                Error: '9998',
-                Mensaje: 'Error con la sentencia SQL ' + error.Mensaje + '.'
+                mensaje: 'Error',
+                response: 'Error con la sentencia SQL ' + error.Mensaje + '.'
             }
         )
     }
@@ -94,37 +94,36 @@ const updateProductoById = async(req, res) => {
     const { pro_id, pro_campo, pro_nuevo_valor } = req.body
     if (pro_id.length == 0|| pro_nuevo_valor.length == 0) {
         return res.json({
-                Error: '9997',
-                Mensaje: 'Revise el parametro pro_id.'
+                mensaje: 'Error',
+                response: 'Revise el parametro pro_id.'
             })
     }
     if (pro_campo.length == 0){
         return res.json({
-            Error: "9997",
-            Mensaje: "Revise el parametro pro_campo."
+            mensaje: 'Error',
+            response: 'Revise el parametro pro_campo.'
         })
     }
     if(pro_nuevo_valor.length == 0){
         return res.json({
-            Error: "9997",
-            Mensaje: "Revise el parametro pro_nuevo_valor."
+            mensaje: 'Error',
+            response: 'Revise el parametro pro_nuevo_valor.'
         })
     }
     try {
         const response = await db.none('UPDATE PRODUCTO SET '+pro_campo+' = $2 WHERE pro_id = $1',[pro_id,pro_nuevo_valor])
         return  res.json({
-            Error: '0',
-            Mensaje: 'Producto con id '+pro_id+' actualizo el campo '+pro_campo+' con el valor '+pro_nuevo_valor
+            mensaje: 'Error',
+            response: 'Producto con id '+pro_id+' actualizo el campo '+pro_campo+' con el valor '+pro_nuevo_valor
         })
     } catch (error) {
         return  res.json({
-            Error: '9998',
-            Mensaje: 'Error con la consulta SQL '+error.Mensaje+'.'
+            mensaje: 'Error',
+            response: 'Error con la consulta SQL '+error.Mensaje+'.'
         })
     }
 }
 
-
 module.exports = {
-    getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, updateAjusteDetalleById
+    getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById
 }

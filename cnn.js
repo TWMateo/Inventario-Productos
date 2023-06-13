@@ -14,9 +14,9 @@ const config = {
 const pgp = pgPromise({})
 const db = pgp(config)
 
-console.log('Conexion ok')
-db.any('Select * from categoria')
-    .then(res => { console.table(res) })
+// console.log('Conexion ok')
+// db.any('Select * from categoria')
+//     .then(res => { console.table(res) })
 
 //Permite exportar la variable a otros archivos
 exports.db = db
