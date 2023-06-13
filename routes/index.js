@@ -5,7 +5,7 @@ const {Router}=require('express')
 //el paquete exportado
 const router =Router()
 const {getPrueba,updateProductoById,updateEstadoProductoById,getProductos, postCreateProducto,getProductosById} = require('../controllers/controlador-producto')
-const {getAjuste, postCreateAjuste} = require('../controllers/controlador-ajuste')
+const {getAjuste, postCreateAjuste, updateAjusteDetalleById} = require('../controllers/controlador-ajuste')
 //Rutas
 router.get('/pruebaApi',getPrueba)
 //PRODUCTOS

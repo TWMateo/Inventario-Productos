@@ -30,27 +30,80 @@ const getAjuste = async (req, res) => {
 }
 
 const postCreateAjuste = async (req, res) => {
-
     try {
-        // Genera aju_numero automáticamente
-        //const aju_numero = 'AJU-006'
-        const { aju_numero, aju_fecha, aju_descripcion, aju_estado } = req.body
-
-        const response = await db.one(`INSERT INTO public.ajuste(aju_numero, aju_fecha, aju_descripcion, aju_estado)
-        VALUES ($1,$2,$3,$4) RETURNING*;`, [aju_numero, aju_fecha, aju_descripcion, aju_estado])
-        res.json(
-            {
-                Mensaje: "Ajuste creado con éxito",
-                response
-            }
-        )
+      // Obtén la última secuencia de aju_numero utilizada
+      const lastAjuNumero = await db.one('SELECT aju_numero FROM public.ajuste ORDER BY aju_numero DESC LIMIT 1');
+      let newAjuNumero;
+  
+      if (lastAjuNumero) {
+        // Extrae el número de la secuencia
+        const lastAjuNumeroParts = lastAjuNumero.aju_numero.split('-');
+        const lastAjuNumeroValue = parseInt(lastAjuNumeroParts[1]);
+  
+        // Incrementa el número de la secuencia
+        const newAjuNumeroValue = lastAjuNumeroValue + 1;
+        newAjuNumero = `AJUS-${newAjuNumeroValue.toString().padStart(4, '0')}`;
+      } else {
+        // Si no hay registros anteriores, establece el valor inicial
+        newAjuNumero = 'AJUS-0001';
+      }
+  
+      const { aju_fecha, aju_descripcion, aju_estado } = req.body;
+  
+      const response = await db.one(`INSERT INTO public.ajuste(aju_numero, aju_fecha, aju_descripcion, aju_estado)
+        VALUES ($1, $2, $3, $4) RETURNING *;`, [newAjuNumero, aju_fecha, aju_descripcion, aju_estado]);
+  
+      res.json({
+        Mensaje: 'Ajuste creado con éxito',
+        response
+      });
     } catch (error) {
-        console.log(error.Mensaje)
-        res.json({ Mensaje: error.Mensaje })
+      console.log(error.Mensaje);
+      res.json({ Mensaje: error.Mensaje });
     }
-}
+  };
+  
+const updateAjusteDetalleById = async (req, res) => {
+    const ajuDetId = req.params.aju_det_id;
+    const { aju_det_cantidad, aju_det_modificable, aju_det_estado } = req.body;
+
+    if (!aju_det_cantidad) {
+        return res.status(400).json({
+          Error: '9997',
+          Mensaje: 'Revise aju_det_cantidad.'
+        });
+      }
+
+      if (typeof aju_det_modificable !== 'boolean') {
+        return res.status(400).json({
+          Error: '9997',
+          Mensaje: 'Revise aju_det_modificable.'
+        });
+      }
+
+      if (typeof aju_det_estado !== 'boolean') {
+        return res.status(400).json({
+          Error: '9997',
+          Mensaje: 'Revise aju_det_estado.'
+        });
+      }
+         
+    try {
+      const updateQuery = `UPDATE ajuste_detalle SET aju_det_cantidad = $1, aju_det_modificable = $2, aju_det_estado = $3
+        WHERE aju_det_id = $4`;
+  
+      const values = [aju_det_cantidad, aju_det_modificable, aju_det_estado, ajuDetId];
+  
+      await db.query(updateQuery, values);
+  
+      res.status(200).json({ message: 'Tabla ajuste_detalle actualizada correctamente' });
+    } catch (error) {
+      console.error('Error al actualizar la tabla ajuste_detalle', error);
+      res.status(500).json({ error: 'Error al actualizar la tabla ajuste_detalle' });
+    }
+  };
 
 
 module.exports = {
-    getAjuste, postCreateAjuste
+    getAjuste, postCreateAjuste, updateAjusteDetalleById
 }
