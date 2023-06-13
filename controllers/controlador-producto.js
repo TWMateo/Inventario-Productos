@@ -76,7 +76,7 @@ const updateEstadoProductoById = async (req, res) => {
         const response = await db.none('UPDATE PRODUCTO SET pro_estado = $2 WHERE pro_id = $1', [pro_id, pro_estado])
         return res.json(
             {
-                mensaje: 'Error',
+                mensaje: 'Correcto',
                 response: 'Estado de producto acutalizado a ' + pro_estado + ' exitosamente.'
             }
         )
@@ -113,7 +113,7 @@ const updateProductoById = async(req, res) => {
     try {
         const response = await db.none('UPDATE PRODUCTO SET '+pro_campo+' = $2 WHERE pro_id = $1',[pro_id,pro_nuevo_valor])
         return  res.json({
-            mensaje: 'Error',
+            mensaje: 'Correcto',
             response: 'Producto con id '+pro_id+' actualizo el campo '+pro_campo+' con el valor '+pro_nuevo_valor
         })
     } catch (error) {
