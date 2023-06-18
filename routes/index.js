@@ -50,7 +50,7 @@ router.get('/auth', async (req, res) => {
 function validateAccesToken(req, res, next) {
     const accesToken = req.headers['authorization']
     if (!accesToken) res.json({
-        message: 'Acceso denegado'
+        message: 'Acceso denegado falta de token'
     })
     jwt.verify(accesToken, process.env.clave, (err, user) => {
         if (err) {
