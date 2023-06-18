@@ -77,7 +77,7 @@ const updateEstadoProductoById = async (req, res) => {
         return res.json(
             {
                 mensaje: 'Correcto',
-                response: 'Estado de producto acutalizado a ' + pro_estado + ' exitosamente.'
+                response: 'Estado de producto actualizado a ' + pro_estado + ' exitosamente.'
             }
         )
     } catch (error) {
