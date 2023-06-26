@@ -14,7 +14,7 @@ router.use(express.json())
 //Creamos una variable para instanciar una variable para usar 
 //el paquete exportado
 const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
-const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto} = require('../controllers/controlador-producto')
+const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById} = require('../controllers/controlador-producto')
 const { getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste} = require('../controllers/controlador-ajuste')
 //Rutas
 router.get('/pruebaApi', getPrueba)
@@ -30,6 +30,7 @@ router.put('/categorias/delete', validateAccesToken, deleteCategoria)
 //PRODUCTOS
 router.get('/productos', validateAccesToken, getProductos)
 router.get('/productos/id/:pro_id', validateAccesToken, getProductosById)
+router.get('/productos/atributos/:pro_id',getAtributosProById)
 router.get('/productos/nombre/:pro_nombre',getProductosByName)
 router.post('/productos/nuevo', validateAccesToken, postCreateProducto)
 router.put('/updateProducto', validateAccesToken, updateProductoById)

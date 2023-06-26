@@ -161,6 +161,17 @@ const deleteProducto = async (req, res) => {
     }
 }
 
+const getAtributosProById = async (req, res) => {
+    try {
+        const pro_id = req.params.pro_id
+        const response = await db.one(`select  pro_valor_iva, pro_pvp, pro_stock from producto where pro_id = $1;`, [pro_id])
+        res.json(response)
+    } catch (error) {
+        console.log(error.Mensaje)
+        res.json({ Mensaje: error.Mensaje })
+    }
+}
+
 module.exports = {
-    getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, deleteProducto, getProductosByName
+    getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, deleteProducto, getProductosByName, getAtributosProById
 }
