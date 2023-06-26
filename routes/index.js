@@ -13,15 +13,27 @@ router.use(express.json())
 
 //Creamos una variable para instanciar una variable para usar 
 //el paquete exportado
-const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById } = require('../controllers/controlador-producto')
-const { getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste } = require('../controllers/controlador-ajuste')
+const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
+const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto} = require('../controllers/controlador-producto')
+const { getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste} = require('../controllers/controlador-ajuste')
 //Rutas
 router.get('/pruebaApi', getPrueba)
+
+//CATEGORÍAS
+router.get('/categorias',validateAccesToken, getCategorias)
+router.get('/categorias/id/:cat_id', validateAccesToken, getCategoriaById)
+router.get('/categorias/nombre/:cat_nombre', validateAccesToken, getCategoriaByName)
+router.post('/categorias/nuevo', validateAccesToken, postCreateCategoria)
+router.put('/updateCategoria/:cat_id', validateAccesToken, updateCategoria) 
+router.put('/categorias/delete', validateAccesToken, deleteCategoria) 
+
 //PRODUCTOS
 router.get('/productos', validateAccesToken, getProductos)
 router.get('/productos/id/:pro_id', validateAccesToken, getProductosById)
+router.get('/productos/nombre/:pro_nombre',getProductosByName)
 router.post('/productos/nuevo', validateAccesToken, postCreateProducto)
 router.put('/updateProducto', validateAccesToken, updateProductoById)
+router.put('/productos/delete', validateAccesToken, deleteProducto) 
 router.put('/updateEstadoProducto', validateAccesToken, updateEstadoProductoById)
 router.put('/updateAjusteDetalle/:aju_det_id', validateAccesToken, updateAjusteDetalleById)
 
@@ -30,7 +42,7 @@ router.get('/ajustes', getAjuste)
 router.post('/ajustes/nuevo', validateAccesToken, postCreateAjuste)
 router.post('/detalles/nuevo', validateAccesToken, postCreateDetalleAjuste)
 
-//Autenticacion token
+//Autenticacion y generacion de token
 router.get('/auth', async (req, res) => {
     const { username, password } = req.body
     const aut = await db.any('SELECT * FROM usuario WHERE usu_nombre = \'' + username + '\' AND usu_password = \'' + password + '\'')
@@ -58,7 +70,8 @@ function validateAccesToken(req, res, next) {
                 message: 'Acceso denegado, token invalido o incorrecto'
             })
         } else {
-            next();
+            req.user = user
+            next()
         }
     })
 }
