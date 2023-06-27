@@ -1,6 +1,7 @@
 //Es la ruta necesaria para ejecutar el programa
 //Exportamos los paquetes de la variable 'Router' del paquete de express.
 const express = require('express');
+const cors = require('cors')
 const { Router } = express
 const jwt = require('jsonwebtoken')
 const { db } = require('../cnn')
@@ -10,6 +11,7 @@ require('dotenv').config()
 const router = Router()
 router.use(express.urlencoded({ extended: false }))
 router.use(express.json())
+router.use(cors())
 
 //Creamos una variable para instanciar una variable para usar 
 //el paquete exportado
@@ -28,7 +30,7 @@ router.put('/updateCategoria/:cat_id', validateAccesToken, updateCategoria)
 router.put('/categorias/delete', validateAccesToken, deleteCategoria) 
 
 //PRODUCTOS
-router.get('/productos', validateAccesToken, getProductos)
+router.get('/productos', validateAccesToken,getProductos)
 router.get('/productos/id/:pro_id', validateAccesToken, getProductosById)
 router.get('/productos/atributos/:pro_id',getAtributosProById)
 router.get('/productos/nombre/:pro_nombre',getProductosByName)
