@@ -16,7 +16,7 @@ router.use(cors())
 //Creamos una variable para instanciar una variable para usar 
 //el paquete exportado
 const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
-const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById} = require('../controllers/controlador-producto')
+const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById, getProductosD, getProductosByIdD, getProductosByNameD} = require('../controllers/controlador-producto')
 const { getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste} = require('../controllers/controlador-ajuste')
 //Rutas
 router.get('/pruebaApi', getPrueba)
@@ -39,6 +39,10 @@ router.put('/updateProducto', validateAccesToken, updateProductoById)
 router.put('/productos/delete', validateAccesToken, deleteProducto) 
 router.put('/updateEstadoProducto', validateAccesToken, updateEstadoProductoById)
 router.put('/updateAjusteDetalle/:aju_det_id', validateAccesToken, updateAjusteDetalleById)
+
+router.get('/productosD', validateAccesToken, getProductosD)
+router.get('/productosD/id/:pro_id',  validateAccesToken, getProductosByIdD)
+router.get('/productosD/nombre/:pro_nombre', validateAccesToken, getProductosByNameD)
 
 //AJUSTE
 router.get('/ajustes', getAjuste)
