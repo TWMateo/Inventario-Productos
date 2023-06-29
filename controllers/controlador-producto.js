@@ -254,10 +254,10 @@ const getAtributosProById = async (req, res) => {
 
 const putUpdateProducto = async (req, res) => {
     try {
-        const { pro_id, pro_nombre, pro_descripcion, cat_id, pro_iva, pro_costo, pro_pvp, pro_imagen } = req.body
-        const response = await db.one(`UPDATE producto SET pro_nombre=$2, pro_descripcion=$3, cat_id=$4, pro_iva=$5, 
-        pro_costo=$6, pro_pvp=$7, pro_imagen=$8 WHERE pro_id=$1 RETURNING*`,
-            [pro_id, pro_nombre, pro_descripcion, cat_id, pro_iva, pro_costo, pro_pvp, pro_imagen])
+        const { pro_id, pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, pro_pvp, pro_imagen, pro_estado} = req.body
+        const response = await db.one(`UPDATE producto SET pro_nombre=$2, pro_descripcion=$3, cat_id=$4, pro_valor_iva=$5, 
+        pro_costo=$6, pro_pvp=$7, pro_imagen=$8, pro_estado=$9 WHERE pro_id=$1 RETURNING*`,
+            [pro_id, pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, pro_pvp, pro_imagen, pro_estado])
         res.json(
             {
                 message: "Producto actualizado con éxito",
