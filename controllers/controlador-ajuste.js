@@ -119,7 +119,73 @@ const updateAjusteDetalleById = async (req, res) => {
       res.status(500).json({ error: 'Error al actualizar la tabla ajuste_detalle' });
     }
   };
+  const putUpdateAjuste = async (req, res) => {
+    const { aju_numero, aju_fecha, aju_descripcion, detalles } = req.body
+    try {
+      //Insercion del ajuste
+      const ajuste = await db.one(`UPDATE public.ajuste SET   aju_fecha=$1, aju_descripcion=$2, aju_estado=true
+              WHERE aju_numero=$3 RETURNING*;`, [aju_fecha, aju_descripcion, aju_numero])
+  
+      await db.none(`DELETE FROM public.ajuste_detalle WHERE aju_numero=$1;`, [aju_numero])
+  
+      //Insercion del detalle
+      let response = [];
+      for (let i = 0; i < detalles.length; i++) {
+        const detalle = await db.one(`INSERT INTO public.ajuste_detalle(aju_numero, pro_id, aju_det_cantidad, 
+                  aju_det_modificable, aju_det_estado) VALUES ($1, $2, $3, true, true) returning*;`,
+          [ajuste.aju_numero, detalles[i].pro_id, detalles[i].aju_det_cantidad])
+        response.push(detalle)
+      }
+      ajuste.aju_detalle = response
+      res.json(ajuste)
+    } catch (error) {
+      console.log(error.message)
+      res.json({ message: error.message })
+    }
+  }
 
+  const postCreateAjustecompleto = async (req, res) => {
+    const { aju_fecha, aju_descripcion, detalles } = req.body;
+    try {
+      // Obtén la última secuencia de aju_numero utilizada
+      const lastAjuNumero = await db.one('SELECT aju_numero FROM public.ajuste ORDER BY aju_numero DESC LIMIT 1');
+      let newAjuNumero;
+  
+      if (lastAjuNumero) {
+        // Extrae el número de la secuencia
+        const lastAjuNumeroParts = lastAjuNumero.aju_numero.split('-');
+        const lastAjuNumeroValue = parseInt(lastAjuNumeroParts[1]);
+  
+        // Incrementa el número de la secuencia
+        const newAjuNumeroValue = lastAjuNumeroValue + 1;
+        newAjuNumero = `AJUS-${newAjuNumeroValue.toString().padStart(4, '0')}`;
+      } else {
+        // Si no hay registros anteriores, establece el valor inicial
+        newAjuNumero = 'AJUS-0001';
+      }
+  
+      // Inserción del ajuste
+      const ajuste = await db.one(`INSERT INTO public.ajuste(aju_numero, aju_fecha, aju_descripcion, aju_estado)
+        VALUES ($1, $2, $3, true) RETURNING *;`, [newAjuNumero, aju_fecha, aju_descripcion]);
+  
+      // Inserción del detalle
+      let detalle = [];
+      for (let i = 0; i < detalles.length; i++) {
+        const response = await db.one(`INSERT INTO public.ajuste_detalle(aju_numero, pro_id, aju_det_cantidad, 
+                aju_det_modificable, aju_det_estado) VALUES ($1, $2, $3, true, true) RETURNING *;`,
+          [ajuste.aju_numero, detalles[i].pro_id, detalles[i].aju_det_cantidad]);
+        detalle.push(response);
+      }
+      ajuste.aju_detalle = detalle;
+      res.json(ajuste);
+    } catch (error) {
+      console.log(error);
+      res.json({
+        message: 'Valores incorrectos'
+      });
+    }
+  };
+  
 module.exports = {
-    getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste
+    getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, putUpdateAjuste, postCreateAjustecompleto
 }
