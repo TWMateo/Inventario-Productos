@@ -6,30 +6,40 @@ const getPrueba = (req, res) => {
     res.send('Funciona el metodo de prueba original')
 }
 
+/**
+ * Calcula el stock de los ajustes realizados a un producto mediante su id
+ * @param {number} pro_id Identificador del producto 
+ * @returns Json con calculo del stock
+ */
+function ajustesStock(pro_id) {
+    try {
+        return new Promise(resolve => {
+            const ajuste_stock = db.one(`select sum(ad.aju_det_cantidad) from producto pro, ajuste_detalle ad 
+        where pro.pro_id=ad.pro_id and pro.pro_id=$1;`, [pro_id])
+            resolve(ajuste_stock)
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
 const getProductos = async (req, res) => {
     try {
         let response = []
         const productos = await db.any(`
-            SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, pro.pro_stock,
+            SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen,
             cat.cat_id, cat.cat_nombre 
             FROM producto pro 
             LEFT JOIN categoria cat ON pro.cat_id = cat.cat_id 
             WHERE pro.pro_estado=true ORDER BY pro.pro_id;`)
 
         //calculo de stock
-        /* for (let i = 0; i < productos.length; i++) {
+        for (let i = 0; i < productos.length; i++) {
             let total = 0
             const ajuste_stock = await ajustesStock(productos[i].pro_id);
             if (ajuste_stock.sum != null)
                 total += parseInt(ajuste_stock.sum)
-            console.log(total)
             productos[i].pro_stock = total
-            productos[i].pro_categoria = {
-                cat_id: productos[i].cat_id,
-                cat_nombre: productos[i].cat_nombre
-            }
-        } */
-
+        }
         res.json(productos)
     } catch (error) {
         console.log(error.Mensaje)
@@ -41,12 +51,17 @@ const getProductosById = async (req, res) => {
     try {
         const pro_id = req.params.pro_id;
         const response = await db.one(
-            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, pro.pro_stock, cat.cat_id, cat.cat_nombre
+            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, cat.cat_id, cat.cat_nombre
         FROM producto pro
         INNER JOIN categoria cat ON pro.cat_id = cat.cat_id
         WHERE pro.pro_id = $1 AND pro.pro_estado = true;`,
-            [pro_id]
-        );
+            [pro_id])
+        //calculo de stock
+        let total = 0
+        const ajuste_stock = await ajustesStock(response.pro_id);
+        if (ajuste_stock.sum != null)
+            total += parseInt(ajuste_stock.sum)
+        response.pro_stock = total
         res.json(response);
     } catch (error) {
         console.log(error.Mensaje);
@@ -58,12 +73,17 @@ const getProductosByName = async (req, res) => {
     try {
         const pro_nombre = req.params.pro_nombre;
         const response = await db.one(
-            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, pro.pro_stock, cat.cat_id, cat.cat_nombre
+            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, cat.cat_id, cat.cat_nombre
         FROM producto pro
         INNER JOIN categoria cat ON pro.cat_id = cat.cat_id
         WHERE pro.pro_nombre = $1 AND pro.pro_estado = true;`,
-            [pro_nombre]
-        );
+            [pro_nombre])
+        //calculo de stock
+        let total = 0
+        const ajuste_stock = await ajustesStock(response.pro_id);
+        if (ajuste_stock.sum != null)
+            total += parseInt(ajuste_stock.sum)
+        response.pro_stock = total
         res.json(response);
     } catch (error) {
         console.log(error.message);
@@ -75,26 +95,18 @@ const getProductosD = async (req, res) => {
     try {
         let response = []
         const productos = await db.any(`
-        SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, pro.pro_stock,
+        SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen,
         cat.cat_id, cat.cat_nombre 
         FROM producto pro 
         LEFT JOIN categoria cat ON pro.cat_id = cat.cat_id 
         WHERE pro.pro_estado = false ORDER BY pro.pro_id;`)
 
         //calculo de stock
-        /* for (let i = 0; i < productos.length; i++) {
-            let total = 0
-            const ajuste_stock = await ajustesStock(productos[i].pro_id);
-            if (ajuste_stock.sum != null)
-                total += parseInt(ajuste_stock.sum)
-            console.log(total)
-            productos[i].pro_stock = total
-            productos[i].pro_categoria = {
-                cat_id: productos[i].cat_id,
-                cat_nombre: productos[i].cat_nombre
-            }
-        } */
-
+        let total = 0
+        const ajuste_stock = await ajustesStock(response.pro_id);
+        if (ajuste_stock.sum != null)
+            total += parseInt(ajuste_stock.sum)
+        response.pro_stock = total
         res.json(productos)
     } catch (error) {
         console.log(error.Mensaje)
@@ -106,12 +118,17 @@ const getProductosByIdD = async (req, res) => {
     try {
         const pro_id = req.params.pro_id;
         const response = await db.one(
-            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, pro.pro_stock, cat.cat_id, cat.cat_nombre
+            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, cat.cat_id, cat.cat_nombre
         FROM producto pro
         INNER JOIN categoria cat ON pro.cat_id = cat.cat_id
         WHERE pro.pro_id = $1 AND pro.pro_estado = false;`,
-            [pro_id]
-        );
+            [pro_id])
+        //calculo de stock
+        let total = 0
+        const ajuste_stock = await ajustesStock(response.pro_id);
+        if (ajuste_stock.sum != null)
+            total += parseInt(ajuste_stock.sum)
+        response.pro_stock = total
         res.json(response);
     } catch (error) {
         console.log(error.Mensaje);
@@ -123,12 +140,17 @@ const getProductosByNameD = async (req, res) => {
     try {
         const pro_nombre = req.params.pro_nombre;
         const response = await db.one(
-            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, pro.pro_stock, cat.cat_id, cat.cat_nombre
+            `SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen, cat.cat_id, cat.cat_nombre
         FROM producto pro
         INNER JOIN categoria cat ON pro.cat_id = cat.cat_id
         WHERE pro.pro_nombre = $1 AND pro.pro_estado = false;`,
-            [pro_nombre]
-        );
+            [pro_nombre])
+        //calculo de stock
+        let total = 0
+        const ajuste_stock = await ajustesStock(response.pro_id);
+        if (ajuste_stock.sum != null)
+            total += parseInt(ajuste_stock.sum)
+        response.pro_stock = total
         res.json(response);
     } catch (error) {
         console.log(error.message);
@@ -203,7 +225,7 @@ const updateProductoById = async (req, res) => {
     }
     try {
         const sentencia = pro_campo.forEach(async valores => {
-            if ((valores['campo'] === 'pro_stock' || valores['campo'] === 'pro_valor_iva'
+            if ((valores['campo'] === 'pro_valor_iva'
                 || valores['campo'] === 'pro_costo' || valores['campo'] === 'pro_pvp')
                 && valores['valor'] < 0) {
                 return res.json({
@@ -244,8 +266,18 @@ const deleteProducto = async (req, res) => {
 const getAtributosProById = async (req, res) => {
     try {
         const pro_id = req.params.pro_id
-        const response = await db.one(`select  pro_valor_iva, pro_pvp, pro_stock from producto where pro_id = $1;`, [pro_id])
-        res.json(response)
+        const response = await db.one(
+            `SELECT  pro.pro_valor_iva, pro.pro_pvp 
+        FROM producto pro 
+        WHERE pro_id = $1 AND pro.pro_estado= true;`, 
+            [pro_id])
+        //calculo de stock
+        let total = 0
+        const ajuste_stock = await ajustesStock(response.pro_id);
+        if (ajuste_stock.sum != null)
+            total += parseInt(ajuste_stock.sum)
+        response.pro_stock = total
+        res.json(response);
     } catch (error) {
         console.log(error.Mensaje)
         res.json({ Mensaje: error.Mensaje })
