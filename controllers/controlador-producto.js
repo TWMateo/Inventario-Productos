@@ -162,7 +162,7 @@ const postCreateProducto = async (req, res) => {
     try {
         const { pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, pro_pvp, pro_imagen } = req.body
         const response = await db.one(`INSERT INTO public.producto(pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, 
-            pro_pvp, pro_imagen, pro_estado, pro_stock) VALUES ($1,$2,$3,$4,$5,$6,$7,true, null) RETURNING*;`,
+            pro_pvp, pro_imagen, pro_estado) VALUES ($1,$2,$3,$4,$5,$6,$7,true) RETURNING*;`,
             [pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, pro_pvp, pro_imagen])
         res.json(
             {
