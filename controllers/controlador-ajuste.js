@@ -6,7 +6,6 @@ const getPrueba = (req, res) => {
     res.send('Funciona el metodo de prueba ajuste')
 }
 
-
 const getAjuste = async (req, res) => {
     try {
         let response = []
@@ -15,7 +14,7 @@ const getAjuste = async (req, res) => {
             const detalles = await db.any(`SELECT aju_det_id, pro_id, aju_det_cantidad, aju_det_modificable, aju_det_estado 
                 FROM ajuste_detalle WHERE aju_numero = $1 AND aju_det_estado = true;`, [ajustes[i].aju_numero])
             for(let j = 0; j < detalles.length; j++){
-                const producto = await db.one(`SELECT pro_id, pro_nombre, pro_descripcion, cat_id, pro_iva, pro_costo, 
+                const producto = await db.one(`SELECT pro_id, pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, 
                     pro_pvp, pro_imagen FROM producto WHERE pro_id=$1;`, [detalles[j].pro_id])
                 detalles[j].producto = producto
             }
