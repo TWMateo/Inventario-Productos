@@ -46,6 +46,19 @@ const facturasStock = async (idProducto) => {
   }
 };
 
+const getAjusteById = async (req, res) => {
+  try {
+    const idProducto = req.params.idProducto
+    const ajusteDetalles = await db.one('SELECT * FROM ajuste_detalle where pro_id=$1',[idProducto])
+    console.log(typeof(ajusteDetalles))
+    // array.forEach(element => {
+      
+    // });
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const getProductos = async (req, res) => {
   try {
     let response = [];
