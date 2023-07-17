@@ -14,30 +14,44 @@ const getPrueba = (req, res) => {
 function ajustesStock(pro_id) {
   try {
     return new Promise((resolve) => {
-      const ajuste_stock = db.one(
-        `select sum(ad.aju_det_cantidad) from producto pro, ajuste_detalle ad 
-        where pro.pro_id=ad.pro_id and pro.pro_id=$1;`,
-        [pro_id]
-      );
-      resolve(ajuste_stock);
+      let query = 'select ad.aju_det_cantidad, ad.aju_det_estado from producto pro, ajuste_detalle ad where pro.pro_id=ad.pro_id and pro.pro_id=$1';
+      db.any(query, [pro_id])
+        .then((data) => {
+          let suma = 0;
+          for(let i = 0; i < data.length; i++){
+            if(data[i].aju_det_estado == true || data[i].aju_det_estado == false){ // verifica el estado antes de sumar
+              suma += Number(data[i].aju_det_cantidad); // convierte a número antes de sumar
+            }
+          }
+          resolve(suma);
+        })
+        .catch((error) => {
+          console.log('Error en la consulta: ', error);
+        });
     });
   } catch (error) {
-    console.log(error);
+    console.log('Error en la función: ', error);
   }
 }
 
 const axios = require("axios");
 
-const facturasStock = async (idProducto) => {
+const facturasVentasStock = async (idProducto) => {
   try {
     let suma = 0;
     const respuesta = await axios.get(
-      "https://facturasapi20230703112622.azurewebsites.net/api/FactDetalleFacturas"
+      "https://facturasapi202307161115.azurewebsites.net/api/FactDetalleFacturas"
     );
     const datos = respuesta.data;
     for (let i = 0; i < datos.length; i++) {
       if (datos[i].idProducto == idProducto) {
-        suma += datos[i].cantidad;
+        const respuestaFactura = await axios.get(
+          `https://facturasapi202307161115.azurewebsites.net/api/FactFacturaCabeceras/${datos[i].idFacturaCabecera}`
+        );
+        const estadoFactura = respuestaFactura.data.estado;
+        if(estadoFactura) {
+          suma += datos[i].cantidad;
+        }
       }
     }
     return suma;
@@ -46,18 +60,29 @@ const facturasStock = async (idProducto) => {
   }
 };
 
-const getAjusteById = async (req, res) => {
+const facturasComprasStock = async (idProducto) => {
   try {
-    const idProducto = req.params.idProducto
-    const ajusteDetalles = await db.one('SELECT * FROM ajuste_detalle where pro_id=$1',[idProducto])
-    console.log(typeof(ajusteDetalles))
-    // array.forEach(element => {
-      
-    // });
+    let suma = 0;
+    const respuesta = await axios.get(
+      "https://gr2compras.000webhostapp.com/facturas"
+    );
+    const datos = respuesta.data;
+
+    for (let i = 0; i < datos.data.length; i++) {
+      // Comprobar si la factura está activa
+      if (datos.data[i].estado === "Activo") {
+        for (let j = 0; j < datos.data[i].detalles.length; j++) {
+          if (datos.data[i].detalles[j].producto_id == idProducto) {
+            suma += Number(datos.data[i].detalles[j].cantidad);
+          }
+        }
+      }
+    }
+    return suma;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 const getProductos = async (req, res) => {
   try {
@@ -73,12 +98,28 @@ const getProductos = async (req, res) => {
     for (let i = 0; i < productos.length; i++) {
       let total = 0;
       const ajuste_stock = await ajustesStock(productos[i].pro_id);
-      if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
+      if (ajuste_stock != null) {
+        const ajuste = parseInt(ajuste_stock);
+    
+        if (ajuste > 0) {
+            total += ajuste;
+        } else if (ajuste < 0 && total + ajuste >= 0) {
+            total += ajuste;
+        } else {
+          console.log("STOCK INSUFICIENTE")
+        }
+    }
 
-      const facturas_stock = await facturasStock(productos[i].pro_id);
-      if (facturas_stock != undefined) {
-        total -= facturas_stock;
-      }
+    const facturas_ventas_stock = await facturasVentasStock(productos[i].pro_id);
+    if (facturas_ventas_stock != undefined) {
+      total -= facturas_ventas_stock;
+    }
+
+    const facturas_compras_stock = await facturasComprasStock(productos[i].pro_id);
+    if (facturas_compras_stock != undefined) {
+      total += facturas_compras_stock;
+    }
+    
       productos[i].pro_stock = total;
     }
     res.json(productos);
@@ -103,9 +144,14 @@ const getProductosById = async (req, res) => {
     const ajuste_stock = await ajustesStock(response.pro_id);
     if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
 
-    const facturas_stock = await facturasStock(response.pro_id);
-    if (facturas_stock != undefined) {
-      total -= facturas_stock;
+    const facturas_ventas_stock = await facturasVentasStock(response.productos.pro_id);
+    if (facturas_ventas_stock != undefined) {
+      total -= facturas_ventas_stock;
+    }
+
+    const facturas_compras_stock = await facturasComprasStock(response.productos.pro_id);
+    if (facturas_compras_stock != undefined) {
+      total += facturas_compras_stock;
     }
 
     response.pro_stock = total;
@@ -131,9 +177,14 @@ const getProductosByName = async (req, res) => {
     const ajuste_stock = await ajustesStock(response.pro_id);
     if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
 
-    const facturas_stock = await facturasStock(response.pro_id);
-    if (facturas_stock != undefined) {
-      total -= facturas_stock;
+    const facturas_ventas_stock = await facturasVentasStock(response.productos.pro_id);
+    if (facturas_ventas_stock != undefined) {
+      total -= facturas_ventas_stock;
+    }
+
+    const facturas_compras_stock = await facturasComprasStock(response.productos.pro_id);
+    if (facturas_compras_stock != undefined) {
+      total += facturas_compras_stock;
     }
 
     response.pro_stock = total;
@@ -159,9 +210,14 @@ const getProductosD = async (req, res) => {
     const ajuste_stock = await ajustesStock(response.pro_id);
     if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
 
-    const facturas_stock = await facturasStock(response.pro_id);
-    if (facturas_stock != undefined) {
-      total -= facturas_stock;
+    const facturas_ventas_stock = await facturasVentasStock(response.productos.pro_id);
+    if (facturas_ventas_stock != undefined) {
+      total -= facturas_ventas_stock;
+    }
+
+    const facturas_compras_stock = await facturasComprasStock(response.productos.pro_id);
+    if (facturas_compras_stock != undefined) {
+      total += facturas_compras_stock;
     }
 
     response.pro_stock = total;
@@ -186,6 +242,17 @@ const getProductosByIdD = async (req, res) => {
     let total = 0;
     const ajuste_stock = await ajustesStock(response.pro_id);
     if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
+
+    const facturas_ventas_stock = await facturasVentasStock(response.productos.pro_id);
+    if (facturas_ventas_stock != undefined) {
+      total -= facturas_ventas_stock;
+    }
+
+    const facturas_compras_stock = await facturasComprasStock(response.productos.pro_id);
+    if (facturas_compras_stock != undefined) {
+      total += facturas_compras_stock;
+    }
+
     response.pro_stock = total;
     res.json(response);
   } catch (error) {
@@ -208,6 +275,17 @@ const getProductosByNameD = async (req, res) => {
     let total = 0;
     const ajuste_stock = await ajustesStock(response.pro_id);
     if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
+
+    const facturas_ventas_stock = await facturasVentasStock(response.productos.pro_id);
+    if (facturas_ventas_stock != undefined) {
+      total -= facturas_ventas_stock;
+    }
+
+    const facturas_compras_stock = await facturasComprasStock(response.productos.pro_id);
+    if (facturas_compras_stock != undefined) {
+      total += facturas_compras_stock;
+    }
+
     response.pro_stock = total;
     res.json(response);
   } catch (error) {

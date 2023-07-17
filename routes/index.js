@@ -17,7 +17,7 @@ router.use(cors())
 //el paquete exportado
 const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
 const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById, getProductosD, getProductosByIdD, getProductosByNameD, putUpdateProducto} = require('../controllers/controlador-producto')
-const { getAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste} = require('../controllers/controlador-ajuste')
+const { getAjuste, updateAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste} = require('../controllers/controlador-ajuste')
 //Rutas
 router.get('/pruebaApi', getPrueba)
 
@@ -39,7 +39,7 @@ router.put('/updateProducto', validateAccesToken, updateProductoById)
 router.put('/productos/delete', validateAccesToken, deleteProducto) 
 router.put('/updateEstadoProducto', validateAccesToken, updateEstadoProductoById)
 router.put('/ActualizarProducto', validateAccesToken, putUpdateProducto)
-router.put('/updateAjusteDetalle/:aju_det_id', validateAccesToken, updateAjusteDetalleById)
+router.put('/updateAjusteDetalle', validateAccesToken, updateAjusteDetalleById)
 
 router.get('/productosD', validateAccesToken, getProductosD)
 router.get('/productosD/id/:pro_id',  validateAccesToken, getProductosByIdD)
@@ -51,6 +51,7 @@ router.post('/ajustes/nuevo', validateAccesToken, postCreateAjuste)
 router.post('/detalles/nuevo', validateAccesToken, postCreateDetalleAjuste)
 router.post('/ajustes/nuevoC',  validateAccesToken, postCreateAjustecompleto)
 router.put('/updateAjusteCompleto/:aju_det_id', validateAccesToken, putUpdateAjuste)
+router.put('/updateAjuste', updateAjuste)
 
 //Autenticacion y generacion de token
 router.get('/auth', async (req, res) => {
