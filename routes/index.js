@@ -47,7 +47,7 @@ router.get('/productosD/id/:pro_id',  validateAccesToken, getProductosByIdD)
 router.get('/productosD/nombre/:pro_nombre', validateAccesToken, getProductosByNameD)
 
 //AJUSTE
-router.get('/ajustes', getAjuste)
+router.get('/ajustes', validateAccesToken, getAjuste)
 router.post('/ajustes/nuevo', validateAccesToken, postCreateAjuste)
 router.post('/detalles/nuevo', validateAccesToken, postCreateDetalleAjuste)
 router.post('/ajustes/nuevoC',  validateAccesToken, postCreateAjustecompleto)
