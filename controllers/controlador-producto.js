@@ -1,5 +1,6 @@
 const express = require("express");
 const { db } = require("../cnn");
+const { postAuditoria } = require('./controlador-auditoria');
 
 const getPrueba = (req, res) => {
   console.log("Funciona");
@@ -318,6 +319,7 @@ const postCreateProducto = async (req, res) => {
         pro_imagen,
       ]
     );
+    await postAuditoria('Creación', 'Inventario', 'postCreateProducto', 'Se ha creado el producto: '+pro_nombre);
     res.json({
       Mensaje: "Producto creado con éxito",
       response: response,
@@ -347,6 +349,7 @@ const updateEstadoProductoById = async (req, res) => {
       "UPDATE PRODUCTO SET pro_estado = $2 WHERE pro_id = $1",
       [pro_id, pro_estado]
     );
+    await postAuditoria('Actualización', 'Inventario', 'updateEstadoProductoById', 'Se actualizó el estado del producto con Id: '+pro_id);
     return res.json({
       mensaje: "Correcto",
       response:
@@ -392,6 +395,7 @@ const updateProductoById = async (req, res) => {
         "UPDATE PRODUCTO SET " + valores["campo"] + " = $2 WHERE pro_id = $1",
         [pro_id, valores["valor"]]
       );
+      await postAuditoria('Actualización', 'Inventario', 'updateProductoById', 'Se actualizó el producto con Id: '+pro_id);
     });
     return res.json({
       mensaje: "Correcto",
@@ -471,6 +475,7 @@ const putUpdateProducto = async (req, res) => {
         pro_estado,
       ]
     );
+    await postAuditoria('Actualización', 'Inventario', 'putUpdateProduct', 'Se actualizó el producto con id:'+pro_id+' Nombre:'+pro_nombre);
     res.json({
       message: "Producto actualizado con éxito",
       response,

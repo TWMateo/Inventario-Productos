@@ -1,5 +1,6 @@
 const express = require('express')
 const { db } = require('../cnn')
+const { postAuditoria } = require('./controlador-auditoria');
 
 const getCategorias = async (req, res) => {
     try {
@@ -40,6 +41,7 @@ const postCreateCategoria = async (req, res) => {
         const { cat_nombre } = req.body
         const response = await db.one(`INSERT INTO public.categoria (cat_nombre, cat_estado)
                                     VALUES ($1, true) returning*;`, [cat_nombre])
+        await postAuditoria('Creación', 'Inventario', 'postCreateCategoria', 'Se ha creado la categoria: '+cat_nombre);
         return res.json({
             mensaje: 'Categoria creada con éxito',
             response: response
@@ -56,6 +58,7 @@ const updateCategoria = async (req, res) => {
         const { cat_nombre, cat_estado } = req.body
         const response = await db.any('UPDATE public.categoria SET cat_nombre=$2, cat_estado=$3 WHERE cat_id=$1 returning*',
             [cat_id, cat_nombre, cat_estado])
+            await postAuditoria('Actualización', 'Inventario', 'updateCategoria', 'Se actualizó la categoría con id: '+cat_id+' Nombre:'+cat_nombre);
         return res.json({
             mensaje: 'Categoria actualizada',
             response: response
