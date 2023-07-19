@@ -205,23 +205,6 @@ const getProductosD = async (req, res) => {
         FROM producto pro 
         LEFT JOIN categoria cat ON pro.cat_id = cat.cat_id 
         WHERE pro.pro_estado = false ORDER BY pro.pro_id;`);
-
-    //calculo de stock
-    let total = 0;
-    const ajuste_stock = await ajustesStock(response.pro_id);
-    if (ajuste_stock.sum != null) total += parseInt(ajuste_stock.sum);
-
-    const facturas_ventas_stock = await facturasVentasStock(response.productos.pro_id);
-    if (facturas_ventas_stock != undefined) {
-      total -= facturas_ventas_stock;
-    }
-
-    const facturas_compras_stock = await facturasComprasStock(response.productos.pro_id);
-    if (facturas_compras_stock != undefined) {
-      total += facturas_compras_stock;
-    }
-
-    response.pro_stock = total;
     res.json(productos);
   } catch (error) {
     console.log(error.Mensaje);
