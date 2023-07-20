@@ -33,7 +33,7 @@ const getAuditoriasFechas = async (req, res) => {
 
 const postAuditoria = async (accion, modulo, funcionalidad, observacion, usu_id) => {
   try {
-    const fecha = DateTime.local().toISO() // Obtener la fecha y hora actual en formato ISO
+    const fecha = DateTime.local().toISO(); // Obtener la fecha y hora actual en formato ISO
     const usu_id = 1; // Usuario fijo con ID 1
     await db.none('INSERT INTO auditoria(aud_fecha, aud_accion, aud_modulo, aud_funcionalidad, aud_observacion, usu_id) VALUES ($1, $2, $3, $4, $5, $6)', [fecha, accion, modulo, funcionalidad, observacion, usu_id]);
   } catch (error) {
