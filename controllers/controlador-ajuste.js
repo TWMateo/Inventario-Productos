@@ -87,6 +87,7 @@ const updateAjuste = async (req, res) => {
   try {
     const response = db.none('UPDATE ajuste SET aju_fecha = $2, aju_descripcion = $3, aju_estado = $4 WHERE aju_numero = $1', 
     [aju_numero, aju_fecha, aju_descripcion, aju_estado])
+    const resp = db.none('UPDATE ajuste_detalle SET aju_det_estado=$2 WHERE aju_numero=$1',[aju_numero,aju_estado])
     await postAuditoria('Actualización', 'Inventario', 'updateAjuste', 'Se actulizó el ajuste: '+aju_numero);
     res.json({
       message: 'Ajuste con aju_numero:'+aju_numero+' actualizado'
