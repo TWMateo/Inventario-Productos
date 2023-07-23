@@ -289,32 +289,20 @@ const postCreateProducto = async (req, res) => {
       pro_imagen,
     } = req.body;
 
-    // Primero calculamos la ganancia del 20%
-    let ganancia = pro_costo * 0.20;
-
-    // Si pro_valor_iva es true, entonces añadimos el 12% al pro_costo + ganancia y lo asignamos a pro_pvp
-    let pro_pvp;
-    if (pro_valor_iva) {
-      pro_pvp = pro_costo + ganancia + (pro_costo * 0.12);
-    } else {
-      pro_pvp = pro_costo + ganancia; // si pro_valor_iva es false solo sumamos la ganancia
-    }
-
     const response = await db.one(
       `INSERT INTO public.producto(pro_nombre, pro_descripcion, cat_id, pro_valor_iva, pro_costo, 
-            pro_pvp, pro_imagen, pro_estado) VALUES ($1,$2,$3,$4,$5,$6,$7,true) RETURNING*;`,
+            pro_imagen, pro_estado) VALUES ($1, $2, $3, $4, $5, $6, true) RETURNING *;`,
       [
         pro_nombre,
         pro_descripcion,
         cat_id,
         pro_valor_iva,
         pro_costo,
-        pro_pvp,
         pro_imagen,
       ]
     );
-    
-    await postAuditoria('Creación', 'Inventario', 'postCreateProducto', 'Se ha creado el producto: '+pro_nombre);
+
+    await postAuditoria('Creación', 'Inventario', 'postCreateProducto', 'Se ha creado el producto: ' + pro_nombre);
 
     res.json({
       Mensaje: "Producto creado con éxito",
@@ -452,20 +440,11 @@ const putUpdateProducto = async (req, res) => {
       cat_id,
       pro_valor_iva,
       pro_costo,
+      pro_pvp,
       pro_imagen,
       pro_estado,
     } = req.body;
 
-    // Primero calculamos la ganancia del 20%
-    let ganancia = pro_costo * 0.20;
-
-    // Si pro_valor_iva es true, entonces añadimos el 12% al pro_costo + ganancia y lo asignamos a pro_pvp
-    let pro_pvp;
-    if (pro_valor_iva) {
-      pro_pvp = pro_costo + ganancia + (pro_costo * 0.12);
-    } else {
-      pro_pvp = pro_costo + ganancia; // si pro_valor_iva es false solo sumamos la ganancia
-    }
 
     const response = await db.one(
       `UPDATE producto SET pro_nombre=$2, pro_descripcion=$3, cat_id=$4, pro_valor_iva=$5, 
@@ -494,6 +473,7 @@ const putUpdateProducto = async (req, res) => {
     res.json({ message: error.message });
   }
 };
+
 
 
 module.exports = {
