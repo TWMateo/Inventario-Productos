@@ -95,7 +95,7 @@ function validateAccesToken(req, res, next) {
 }
 
 function generateAccesToken(user) {
-    return jwt.sign(user, process.env.clave, { expiresIn: '24h' });
+    return jwt.sign(user, process.env.clave, { expiresIn: '72h' });
 }
 
 module.exports = router
