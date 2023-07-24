@@ -38,10 +38,10 @@ const getCategoriaByName = async (req, res) => {
 
 const postCreateCategoria = async (req, res) => {
     try {
-        const { cat_nombre } = req.body
+        const { aud_usuario, cat_nombre } = req.body
         const response = await db.one(`INSERT INTO public.categoria (cat_nombre, cat_estado)
                                     VALUES ($1, true) returning*;`, [cat_nombre])
-        await postAuditoria('Creación', 'Inventario', 'postCreateCategoria', 'Se ha creado la categoria: '+cat_nombre);
+        await postAuditoriaE(aud_usuario, 'Creación', 'postCreateCategoria', 'Se ha creado la categoria: '+cat_nombre);
         return res.json({
             mensaje: 'Categoria creada con éxito',
             response: response
@@ -55,10 +55,10 @@ const postCreateCategoria = async (req, res) => {
 const updateCategoria = async (req, res) => {
     try {
         const cat_id = req.params.cat_id
-        const { cat_nombre, cat_estado } = req.body
+        const { aud_usuario, cat_nombre, cat_estado } = req.body
         const response = await db.any('UPDATE public.categoria SET cat_nombre=$2, cat_estado=$3 WHERE cat_id=$1 returning*',
             [cat_id, cat_nombre, cat_estado])
-            await postAuditoria('Actualización', 'Inventario', 'updateCategoria', 'Se actualizó la categoría con id: '+cat_id+' Nombre:'+cat_nombre);
+            await postAuditoriaE(aud_usuario,'Actualización', 'updateCategoria', 'Se actualizó la categoría con id: '+cat_id+' Nombre:'+cat_nombre);
         return res.json({
             mensaje: 'Categoria actualizada',
             response: response

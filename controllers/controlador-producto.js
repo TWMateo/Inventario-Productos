@@ -281,6 +281,7 @@ const getProductosByNameD = async (req, res) => {
 const postCreateProducto = async (req, res) => {
   try {
     let {
+      aud_usuario,
       pro_nombre,
       pro_descripcion,
       cat_id,
@@ -302,7 +303,7 @@ const postCreateProducto = async (req, res) => {
       ]
     );
 
-    await postAuditoria('Creación', 'Inventario', 'postCreateProducto', 'Se ha creado el producto: ' + pro_nombre);
+    await postAuditoriaE(aud_usuario,'Creación', 'postCreateProducto', 'Se ha creado el producto: ' + pro_nombre);
 
     res.json({
       Mensaje: "Producto creado con éxito",
@@ -333,7 +334,6 @@ const updateEstadoProductoById = async (req, res) => {
       "UPDATE PRODUCTO SET pro_estado = $2 WHERE pro_id = $1",
       [pro_id, pro_estado]
     );
-    await postAuditoria('Actualización', 'Inventario', 'updateEstadoProductoById', 'Se actualizó el estado del producto con Id: '+pro_id);
     return res.json({
       mensaje: "Correcto",
       response:
@@ -379,7 +379,6 @@ const updateProductoById = async (req, res) => {
         "UPDATE PRODUCTO SET " + valores["campo"] + " = $2 WHERE pro_id = $1",
         [pro_id, valores["valor"]]
       );
-      await postAuditoria('Actualización', 'Inventario', 'updateProductoById', 'Se actualizó el producto con Id: '+pro_id);
     });
     return res.json({
       mensaje: "Correcto",
@@ -434,6 +433,7 @@ const getAtributosProById = async (req, res) => {
 const putUpdateProducto = async (req, res) => {
   try {
     let {
+      aud_usuario,
       pro_id,
       pro_nombre,
       pro_descripcion,
@@ -462,7 +462,7 @@ const putUpdateProducto = async (req, res) => {
       ]
     );
 
-    await postAuditoria('Actualización', 'Inventario', 'putUpdateProduct', 'Se actualizó el producto con id:'+pro_id+' Nombre:'+pro_nombre);
+    await postAuditoriaE(aud_usuario, 'Actualización', 'putUpdateProduct', 'Se actualizó el producto con id:'+pro_id+' Nombre:'+pro_nombre);
 
     res.json({
       message: "Producto actualizado con éxito",

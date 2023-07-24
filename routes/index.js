@@ -56,7 +56,9 @@ router.put('/updateAjuste', updateAjuste)
 
 //AUDITORÍA
 router.get('/auditoria', validateAccesToken, getAuditoria)
-router.get('/auditoriafecha', validateAccesToken, getAuditoriasFechas)
+router.get('/auditoriafecha',validateAccesToken, getAuditoriasFechas)
+router.post('/auditoriaPost',validateAccesToken, postAuditoriaE)
+
 
 //Autenticacion y generacion de token
 router.get('/auth', async (req, res) => {
