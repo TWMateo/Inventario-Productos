@@ -47,13 +47,7 @@ const facturasVentasStock = async (idProducto) => {
     const datos = respuesta.data;
     for (let i = 0; i < datos.length; i++) {
       if (datos[i].idProducto == idProducto) {
-        const respuestaFactura = await axios.get(
-          `https://facturasapi202307161115.azurewebsites.net/api/FactFacturaCabecera/${datos[i].idFacturaCabecera}`
-        );
-        const estadoFactura = respuestaFactura.data.estado;
-        if(estadoFactura) {
-          suma += datos[i].cantidad;
-        }
+        suma += datos[i].cantidad;
       }
     }
     return suma;
@@ -61,6 +55,7 @@ const facturasVentasStock = async (idProducto) => {
     console.log(error);
   }
 };
+
 
 const facturasComprasStock = async (idProducto) => {
   try {
