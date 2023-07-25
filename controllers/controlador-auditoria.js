@@ -6,7 +6,6 @@ const { format, parseISO } = require('date-fns');
 const getAuditoria = async (req, res) => {
   try {
     const auditoria = await db.any('SELECT * FROM auditoria');
-    await postAuditoriaE('Usuario: Rivaldo Sanchez','Inicio de sesión', 'getAuditoria', 'Se ingresó a revisión de tabla de auditoria');
     res.json(auditoria);
   } catch (error) {
     console.log(error.message);
@@ -37,6 +36,7 @@ const getAuditoriasFechas = async (req, res) => {
   }
 };
 
+
 const postAuditoria = async (accion, modulo, funcionalidad, observacion, usu_id) => {
   try {
     const fecha = DateTime.local().toISO(); // Obtener la fecha y hora actual en formato ISO
@@ -63,7 +63,7 @@ const postAuditoriaE = async (aud_usuario, accion, funcionalidad, observacion) =
         fecha,
         accion,
         funcionalidad,
-        observacion 
+        observacion // Usamos la fecha obtenida en lugar del campo "aud_fecha" del req.body
       ]
     );
 
@@ -72,10 +72,67 @@ const postAuditoriaE = async (aud_usuario, accion, funcionalidad, observacion) =
   }
 };
 
+const PostInicioSesion = async (req) => {
+  try {
+    let {
+      aud_usuario,
+    } = req.body;
+
+    // Obtener la fecha y hora actual en formato ISO
+    const fecha = DateTime.local().toISO();
+    let accion = "Inicio de sesión"
+    let funcionalidad = "handleLogin"
+    let observacion = "Se inició sesión"
+    const response = await db.one(
+      `INSERT INTO public.auditoria(aud_usuario, aud_fecha, aud_accion, aud_modulo, aud_funcionalidad, aud_observacion) 
+       VALUES ($1, $2, $3, 'Inventario', $4, $5) RETURNING *;`,
+      [
+        aud_usuario,
+        fecha,
+        accion,
+        funcionalidad,
+        observacion
+      ]
+    );
+
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const PostCerrarSesión = async (req) => {
+  try {
+    let {
+      aud_usuario,
+    } = req.body;
+
+    // Obtener la fecha y hora actual en formato ISO
+    const fecha = DateTime.local().toISO();
+    let accion = "Cierre de sesión"
+    let funcionalidad = "handleLogout"
+    let observacion = "Se cerró sesión"
+    const response = await db.one(
+      `INSERT INTO public.auditoria(aud_usuario, aud_fecha, aud_accion, aud_modulo, aud_funcionalidad, aud_observacion) 
+       VALUES ($1, $2, $3, 'Inventario', $4, $5) RETURNING *;`,
+      [
+        aud_usuario,
+        fecha,
+        accion,
+        funcionalidad,
+        observacion
+      ]
+    );
+
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   getAuditoria,
   postAuditoria,
   getAuditoriasFechas,
-  postAuditoriaE
+  postAuditoriaE,
+  PostInicioSesion,
+  PostCerrarSesión
 };  

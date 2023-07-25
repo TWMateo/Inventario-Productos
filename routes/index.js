@@ -18,7 +18,7 @@ router.use(cors())
 const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
 const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById, getProductosD, getProductosByIdD, getProductosByNameD, putUpdateProducto} = require('../controllers/controlador-producto')
 const { getAjuste, updateAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste} = require('../controllers/controlador-ajuste')
-const { getAuditoria, postAuditoria, getAuditoriasFechas, postAuditoriaE } = require('../controllers/controlador-auditoria')
+const { getAuditoria, postAuditoria, getAuditoriasFechas, postAuditoriaE, PostInicioSesion, PostCerrarSesión } = require('../controllers/controlador-auditoria')
 //Rutas
 router.get('/pruebaApi', getPrueba)
 
@@ -58,6 +58,8 @@ router.put('/updateAjuste', updateAjuste)
 router.get('/auditoria', validateAccesToken, getAuditoria)
 router.get('/auditoriafecha',validateAccesToken, getAuditoriasFechas)
 router.post('/auditoriaPost',validateAccesToken, postAuditoriaE)
+router.post('/Isesion', validateAccesToken, PostInicioSesion)
+router.post('/Csesion', validateAccesToken, PostCerrarSesión)
 
 
 //Autenticacion y generacion de token

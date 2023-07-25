@@ -41,13 +41,13 @@ const facturasVentasStock = async (idProducto) => {
   try {
     let suma = 0;
     const respuesta = await axios.get(
-      "https://facturasapi202307161115.azurewebsites.net/api/FactDetalleFacturas"
+      "https://facturasapi202307161115.azurewebsites.net/api/FactDetalleFactura"
     );
     const datos = respuesta.data;
     for (let i = 0; i < datos.length; i++) {
       if (datos[i].idProducto == idProducto) {
         const respuestaFactura = await axios.get(
-          `https://facturasapi202307161115.azurewebsites.net/api/FactFacturaCabeceras/${datos[i].idFacturaCabecera}`
+          `https://facturasapi202307161115.azurewebsites.net/api/FactFacturaCabecera/${datos[i].idFacturaCabecera}`
         );
         const estadoFactura = respuestaFactura.data.estado;
         if(estadoFactura) {

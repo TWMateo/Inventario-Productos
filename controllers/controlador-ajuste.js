@@ -88,7 +88,7 @@ const updateAjuste = async (req, res) => {
     const response = db.none('UPDATE ajuste SET aju_fecha = $2, aju_descripcion = $3, aju_estado = $4 WHERE aju_numero = $1', 
     [aju_numero, aju_fecha, aju_descripcion, aju_estado])
     const resp = db.none('UPDATE ajuste_detalle SET aju_det_estado=$2 WHERE aju_numero=$1',[aju_numero,aju_estado])
-    await postAuditoriaE(aud_usuario, 'Actualización', 'updateAjuste', 'Se actulizó el ajuste: '+aju_numero);
+    await postAuditoriaE(aud_usuario, 'Actualización', 'updateAjuste', 'Se actualizó el ajuste: '+aju_numero);
     res.json({
       message: 'Ajuste con aju_numero:'+aju_numero+' actualizado'
     })
@@ -130,7 +130,7 @@ const updateAjusteDetalleById = async (req, res) => {
     const values = [aju_det_cantidad, aju_det_modificable, aju_det_estado, aju_det_id];
 
     await db.query(updateQuery, values);
-    await postAuditoriaE(aud_usuario, 'Actualización', 'updateAjusteDetalleById', 'Se actulizó el detalle de ajuste con id: '+aju_det_id);
+    await postAuditoriaE(aud_usuario, 'Actualización', 'updateAjusteDetalleById', 'Se actualizó el detalle de ajuste con id: '+aju_det_id);
     res.status(200).json({ message: 'Tabla ajuste_detalle actualizada correctamente' });
   } catch (error) {
     console.error('Error al actualizar la tabla ajuste_detalle', error);
@@ -154,7 +154,6 @@ const putUpdateAjuste = async (req, res) => {
       response.push(detalle)
     }
     ajuste.aju_detalle = response
-    await postAuditoriaE(aud_usuario, 'Actualización', 'putUpdateAjuste', 'Se actulizó el ajuste y detalle del ajuste:'+aju_numero);
     res.json(ajuste)
   } catch (error) {
     console.log(error.message)
