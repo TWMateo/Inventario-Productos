@@ -1,6 +1,6 @@
 const express = require('express')
 const { db } = require('../cnn')
-const { postAuditoria } = require('./controlador-auditoria');
+const { postAuditoria, postAuditoriaE } = require('./controlador-auditoria');
 
 const getCategorias = async (req, res) => {
     try {
