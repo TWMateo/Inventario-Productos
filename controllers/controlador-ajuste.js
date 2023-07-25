@@ -29,6 +29,8 @@ const getAjuste = async (req, res) => {
   }
 }
 
+
+
 const postCreateAjuste = async (req, res) => {
   try {
     // Obtén la última secuencia de aju_numero utilizada
@@ -161,6 +163,25 @@ const putUpdateAjuste = async (req, res) => {
   }
 }
 
+const updateAjusteDetalle = async (req, res) => {
+  const { aju_numero } = req.params;
+  console.log("Valor de aju_numero recibido en el backend:", aju_numero);
+  try {
+    // Actualiza el campo aju_det_modificable a false para cada ajuste de detalle relacionado con el ajuste específico
+    await db.none(`UPDATE public.ajuste_detalle SET aju_det_modificable=false WHERE aju_numero=$1;`, [aju_numero]);
+    
+    // Obtenemos el ajuste con los detalles actualizados para enviar en la respuesta
+    const ajuste = await db.one('SELECT * FROM public.ajuste WHERE aju_numero = $1;', [aju_numero]);
+    const detalles = await db.any('SELECT * FROM public.ajuste_detalle WHERE aju_numero = $1;', [aju_numero]);
+    ajuste.detalles = detalles;
+    
+    res.json(ajuste);
+  } catch (error) {
+    console.log(error.message);
+    res.json({ message: error.message });
+  }
+};
+
 const postCreateAjustecompleto = async (req, res) => {
   const { aud_usuario, aju_fecha, aju_descripcion, detalles } = req.body;
   try {
@@ -209,5 +230,5 @@ module.exports = {
   updateAjusteDetalleById, 
   postCreateDetalleAjuste, 
   putUpdateAjuste, postCreateAjustecompleto,
-  updateAjuste
+  updateAjuste, updateAjusteDetalle
 }

@@ -17,7 +17,7 @@ router.use(cors())
 //el paquete exportado
 const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
 const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById, getProductosD, getProductosByIdD, getProductosByNameD, putUpdateProducto} = require('../controllers/controlador-producto')
-const { getAjuste, updateAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste} = require('../controllers/controlador-ajuste')
+const { getAjuste, updateAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste, updateAjusteDetalle} = require('../controllers/controlador-ajuste')
 const { getAuditoria, postAuditoria, getAuditoriasFechas, postAuditoriaE, PostInicioSesion, PostCerrarSesión } = require('../controllers/controlador-auditoria')
 //Rutas
 router.get('/pruebaApi', getPrueba)
@@ -53,6 +53,7 @@ router.post('/detalles/nuevo', validateAccesToken, postCreateDetalleAjuste)
 router.post('/ajustes/nuevoC',  validateAccesToken, postCreateAjustecompleto)
 router.put('/updateAjusteCompleto/:aju_det_id', validateAccesToken, putUpdateAjuste)
 router.put('/updateAjuste', updateAjuste)
+router.put('/updateAjusteDetalles/:aju_numero', updateAjusteDetalle)
 
 //AUDITORÍA
 router.get('/auditoria', validateAccesToken, getAuditoria)
