@@ -83,42 +83,49 @@ const facturasComprasStock = async (idProducto) => {
 
 const getProductos = async (req, res) => {
   try {
+    console.log('Get productos entrando')
     let response = [];
     const productos = await db.any(`
-            SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen,
-            cat.cat_id, cat.cat_nombre 
-            FROM producto pro 
-            LEFT JOIN categoria cat ON pro.cat_id = cat.cat_id 
-            WHERE pro.pro_estado=true ORDER BY pro.pro_id;`);
+      SELECT pro.pro_id, pro.pro_nombre, pro.pro_descripcion, pro.pro_valor_iva, pro.pro_costo, pro.pro_pvp, pro.pro_imagen,
+      cat.cat_id, cat.cat_nombre 
+      FROM producto pro 
+      LEFT JOIN categoria cat ON pro.cat_id = cat.cat_id 
+      WHERE pro.pro_estado=true ORDER BY pro.pro_id;
+    `);
 
-    //calculo de stock
     for (let i = 0; i < productos.length; i++) {
-      let total = 0;
+      let total = 0; // Initialize total outside the loop
       const ajuste_stock = await ajustesStock(productos[i].pro_id);
       if (ajuste_stock != null) {
         const ajuste = parseInt(ajuste_stock);
-    
         if (ajuste > 0) {
-            total += ajuste;
+          total += ajuste;
         } else if (ajuste < 0 && total + ajuste >= 0) {
-            total += ajuste;
+          total += ajuste;
         } else {
-          console.log("STOCK INSUFICIENTE")
+          console.log("STOCK INSUFICIENTE");
         }
-    }
+      }
 
-    const facturas_ventas_stock = await facturasVentasStock(productos[i].pro_id);
-    if (facturas_ventas_stock != undefined) {
-      total -= facturas_ventas_stock;
-    }
+      const facturas_ventas_stock = await facturasVentasStock(productos[i].pro_id);
+      if (facturas_ventas_stock != undefined) {
+        if (facturas_ventas_stock < 0 && total + facturas_ventas_stock >= 0) {
+          total -= facturas_ventas_stock;
+        }else {
+          console.log("STOCK INSUFICIENTE");
+        }
+       
+      }
 
-    const facturas_compras_stock = await facturasComprasStock(productos[i].pro_id);
-    if (facturas_compras_stock != undefined) {
-      total += facturas_compras_stock;
-    }
-    
+      const facturas_compras_stock = await facturasComprasStock(productos[i].pro_id);
+      if (facturas_compras_stock != undefined) {
+        total += facturas_compras_stock;
+
+      }
+
       productos[i].pro_stock = total;
     }
+
     res.json(productos);
   } catch (error) {
     console.log(error.Mensaje);
