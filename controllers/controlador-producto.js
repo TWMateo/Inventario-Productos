@@ -46,8 +46,8 @@ const facturasVentasStock = async (idProducto) => {
     );
     const datos = respuesta.data;
     for (let i = 0; i < datos.length; i++) {
-      if (datos[i].idProducto == idProducto) {
-        suma += datos[i].cantidad;
+      if (datos[i].IdProducto == idProducto) {
+        suma += datos[i].Cantidad;
       }
     }
     return suma;
