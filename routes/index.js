@@ -24,7 +24,7 @@ const {getDatosSesion} = require('../controllers/controlador-sesion')
 router.get('/pruebaApi', getPrueba)
 
 //SESION
-router.get('/inicioSesion',getDatosSesion)
+router.get('/inicioSesion', validateAccesToken, getDatosSesion)
 
 //CATEGORÍAS
 router.get('/categorias',validateAccesToken, getCategorias)
