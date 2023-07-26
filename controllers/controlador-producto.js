@@ -109,7 +109,7 @@ const getProductos = async (req, res) => {
 
       const facturas_ventas_stock = await facturasVentasStock(productos[i].pro_id);
       if (facturas_ventas_stock != undefined) {
-        if (facturas_ventas_stock < 0 && total + facturas_ventas_stock >= 0) {
+        if (facturas_ventas_stock > 0 && total - facturas_ventas_stock >= 0) {
           total -= facturas_ventas_stock;
         }else {
           console.log("STOCK INSUFICIENTE");

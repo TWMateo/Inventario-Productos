@@ -29,8 +29,6 @@ const getAjuste = async (req, res) => {
   }
 }
 
-
-
 const postCreateAjuste = async (req, res) => {
   try {
     // Obtén la última secuencia de aju_numero utilizada
