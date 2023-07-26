@@ -19,12 +19,12 @@ const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, de
 const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById, getProductosD, getProductosByIdD, getProductosByNameD, putUpdateProducto} = require('../controllers/controlador-producto')
 const { getAjuste, updateAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste, updateAjusteDetalle} = require('../controllers/controlador-ajuste')
 const { getAuditoria, postAuditoria, getAuditoriasFechas, postAuditoriaE, PostInicioSesion, PostCerrarSesión } = require('../controllers/controlador-auditoria')
-const {getDatosSesion} = require('../controllers/controlador-sesion')
+const {postDatosSesion} = require('../controllers/controlador-sesion')
 //Rutas
 router.get('/pruebaApi', getPrueba)
 
 //SESION
-router.get('/inicioSesion', validateAccesToken, getDatosSesion)
+router.post('/inicioSesion', validateAccesToken, postDatosSesion)
 
 //CATEGORÍAS
 router.get('/categorias',validateAccesToken, getCategorias)
