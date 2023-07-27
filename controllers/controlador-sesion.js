@@ -2,6 +2,7 @@ const axios = require('axios')
 
 const postDatosSesion = async (req, res) => {
     const { username, password } = req.body
+    console.log(req.body)
     const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwODA0MzIxMzcwIiwiZXhwIjoxNjk0OTg1NDgyfQ.GljEqO4wDKT_x94OIQ76k2AraJUY4YKAwBFrfs-ZsMQ'
     if (!username) {
         return res.json({

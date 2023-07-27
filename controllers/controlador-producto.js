@@ -98,23 +98,16 @@ const getProductos = async (req, res) => {
       const ajuste_stock = await ajustesStock(productos[i].pro_id);
       if (ajuste_stock != null) {
         const ajuste = parseInt(ajuste_stock);
-        if (ajuste > 0) {
           total += ajuste;
-        } else if (ajuste < 0 && total + ajuste >= 0) {
-          total += ajuste;
-        } else {
-          console.log("STOCK INSUFICIENTE");
-        }
+
       }
 
       const facturas_ventas_stock = await facturasVentasStock(productos[i].pro_id);
       if (facturas_ventas_stock != undefined) {
-        if (facturas_ventas_stock > 0 && total - facturas_ventas_stock >= 0) {
+
           total -= facturas_ventas_stock;
-        }else {
-          console.log("STOCK INSUFICIENTE");
-        }
-       
+
+
       }
 
       const facturas_compras_stock = await facturasComprasStock(productos[i].pro_id);
@@ -123,7 +116,13 @@ const getProductos = async (req, res) => {
 
       }
 
-      productos[i].pro_stock = total;
+      if(total<0){
+        console.log("STOCK INSUFICIENTE")
+        productos[i].pro_stock = 0;
+      }else{
+        productos[i].pro_stock = total;
+      }
+
     }
 
     res.json(productos);
