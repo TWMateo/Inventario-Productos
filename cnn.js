@@ -1,14 +1,11 @@
 //Importa el paquete
 const pgPromise = require('pg-promise')
 const config = {
-    host: 'dpg-chubg1t269vccp3hrhd0-a.ohio-postgres.render.com',
+    host: 'localhost',
     port: '5432',
-    database: 'inventario_rhxq',
-    user: 'admin',
-    password: 'HbDZkPO0xthkUOFJ0BJmZe7PyEGOGxFM',
-    ssl: {
-        rejectUnauthorized: false
-    }
+    database: 'MokApp',
+    user: 'postgres',
+    password: '0505'
 }
 //Instancia como objeto
 const pgp = pgPromise({})
