@@ -1,7 +1,5 @@
 const express = require("express");
 const { db } = require("../cnn");
-const { postAuditoria, postAuditoriaE } = require('./controlador-auditoria');
-
 
 const getPrueba = (req, res) => {
   console.log("Funciona");
@@ -305,8 +303,6 @@ const postCreateProducto = async (req, res) => {
       ]
     );
 
-    await postAuditoriaE(aud_usuario,'Creación', 'postCreateProducto', 'Se ha creado el producto: ' + pro_nombre);
-
     res.json({
       Mensaje: "Producto creado con éxito",
       response: response,
@@ -463,8 +459,6 @@ const putUpdateProducto = async (req, res) => {
         pro_estado,
       ]
     );
-
-    await postAuditoriaE(aud_usuario, 'Actualización', 'putUpdateProduct', 'Se actualizó el producto con id:'+pro_id+' Nombre:'+pro_nombre);
 
     res.json({
       message: "Producto actualizado con éxito",

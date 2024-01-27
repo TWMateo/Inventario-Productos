@@ -1,6 +1,5 @@
 const express = require('express')
 const { db } = require('../cnn')
-const { postAuditoria, postAuditoriaE } = require('./controlador-auditoria');
 
 const getPrueba = (req, res) => {
   console.log('Funciona')
@@ -48,11 +47,10 @@ const postCreateAjuste = async (req, res) => {
       newAjuNumero = 'AJUS-0001';
     }
 
-    const {aud_usuario, aju_fecha, aju_descripcion, aju_estado } = req.body;
+    const { aju_fecha, aju_descripcion, aju_estado } = req.body;
 
     const response = await db.one(`INSERT INTO public.ajuste(aju_numero, aju_fecha, aju_descripcion, aju_estado)
       VALUES ($1, $2, $3, $4) RETURNING *;`, [newAjuNumero, aju_fecha, aju_descripcion, aju_estado]);
-      await postAuditoriaE(aud_usuario, 'Creación', 'postCreateAjuste', 'Se ha creado el ajuste: '+newAjuNumero);
 
     res.json({
       Mensaje: 'Ajuste creado con éxito',
@@ -66,10 +64,9 @@ const postCreateAjuste = async (req, res) => {
 
 const postCreateDetalleAjuste = async (req, res) => {
   try {
-    const {aud_usuario, aju_numero, pro_id, aju_det_cantidad, aju_det_modificable, aju_det_estado } = req.body
+    const { aju_numero, pro_id, aju_det_cantidad, aju_det_modificable, aju_det_estado } = req.body
     const response = await db.one(`INSERT INTO public.ajuste_detalle(aju_numero, pro_id, aju_det_cantidad, aju_det_modificable, aju_det_estado)
               VALUES ($1,$2,$3,$4,$5) RETURNING*;`, [aju_numero, pro_id, aju_det_cantidad, aju_det_modificable, aju_det_estado])
-    await postAuditoriaE(aud_usuario, 'Creación', 'postCreateDetalleAjuste', 'Se ha creado el detalle del ajuste: '+aju_numero);
     res.json(
       {
         Mensaje: "Detalle creado con éxito",
@@ -83,12 +80,12 @@ const postCreateDetalleAjuste = async (req, res) => {
 }
 
 const updateAjuste = async (req, res) => {
-  const {aud_usuario, aju_numero, aju_fecha, aju_descripcion, aju_estado} = req.body
+  const { aju_numero, aju_fecha, aju_descripcion, aju_estado} = req.body
   try {
     const response = db.none('UPDATE ajuste SET aju_fecha = $2, aju_descripcion = $3, aju_estado = $4 WHERE aju_numero = $1', 
     [aju_numero, aju_fecha, aju_descripcion, aju_estado])
     const resp = db.none('UPDATE ajuste_detalle SET aju_det_estado=$2 WHERE aju_numero=$1',[aju_numero,aju_estado])
-    await postAuditoriaE(aud_usuario, 'Actualización', 'updateAjuste', 'Se actualizó el ajuste: '+aju_numero);
+
     res.json({
       message: 'Ajuste con aju_numero:'+aju_numero+' actualizado'
     })
@@ -130,7 +127,6 @@ const updateAjusteDetalleById = async (req, res) => {
     const values = [aju_det_cantidad, aju_det_modificable, aju_det_estado, aju_det_id];
 
     await db.query(updateQuery, values);
-    await postAuditoriaE(aud_usuario, 'Actualización', 'updateAjusteDetalleById', 'Se actualizó el detalle de ajuste con id: '+aju_det_id);
     res.status(200).json({ message: 'Tabla ajuste_detalle actualizada correctamente' });
   } catch (error) {
     console.error('Error al actualizar la tabla ajuste_detalle', error);
@@ -213,7 +209,6 @@ const postCreateAjustecompleto = async (req, res) => {
       detalle.push(response);
     }
     ajuste.aju_detalle = detalle;
-    await postAuditoriaE(aud_usuario, 'Creación', 'postCreateAjustecompleto', 'Se creó el ajuste: '+newAjuNumero+' con el detalle:'+aju_detalle.aju_det_id);
     res.json(ajuste);
   } catch (error) {
     console.log(error);

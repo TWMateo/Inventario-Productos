@@ -18,7 +18,6 @@ router.use(cors())
 const { getCategorias, getCategoriaById, getCategoriaByName, updateCategoria, deleteCategoria, postCreateCategoria } = require('../controllers/controlador-categoria')
 const { getPrueba, updateProductoById, updateEstadoProductoById, getProductos, postCreateProducto, getProductosById, getProductosByName, deleteProducto, getAtributosProById, getProductosD, getProductosByIdD, getProductosByNameD, putUpdateProducto} = require('../controllers/controlador-producto')
 const { getAjuste, updateAjuste, postCreateAjuste, updateAjusteDetalleById, postCreateDetalleAjuste, postCreateAjustecompleto, putUpdateAjuste, updateAjusteDetalle} = require('../controllers/controlador-ajuste')
-const { getAuditoria, postAuditoria, getAuditoriasFechas, postAuditoriaE, PostInicioSesion, PostCerrarSesión } = require('../controllers/controlador-auditoria')
 const {postDatosSesion} = require('../controllers/controlador-sesion')
 //Rutas
 router.get('/pruebaApi', getPrueba)
